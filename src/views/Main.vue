@@ -11,12 +11,20 @@
     </el-table-column>
     <el-table-column prop="operation" label="操作" width="335">
       <template>
-        <button>
-          ///////////////////////////////////
-        </button>
+        <el-button>
+          操作
+        </el-button>
       </template>
     </el-table-column>
     <el-table-column prop="position" label="关闭状态" width="335">
+      <template slot-scope="scope">
+        <el-switch
+        v-model="scope.row.suspended"
+        active-color="#3c8984"
+        inactive-color="#dcdfe6">
+      </el-switch>
+      </template>
+     
     </el-table-column>
   </el-table>
 </template>
@@ -41,10 +49,11 @@ export default {
           obj.name = item.name["zh-CN"];
           obj.address = item.address["formatted"];
           obj.tags = item.tags;
+          obj.canDeliver = item.canDeliver
           oldObject.push(obj);
         });
         this.tableData = oldObject;
-        console.log(this.tableData);
+        console.log(this.tableData)
       })
       .catch((err) => {
         console.log(err);
