@@ -40,20 +40,14 @@
   :title="dialogTitle"
   :visible.sync="dialogVisible"
   width="40%">
-
 <!-- 中英文切换 -->
-
- <el-input placeholder="请输入内容"  v-model="dialogData.name" class="input-with-select">
-    <el-select v-model="select" slot="prepend" placeholder="请选择">
-      <el-option label="中文" value="1"></el-option>
-      <el-option label="英文" value="2"></el-option>
+  <el-input placeholder="请输入内容"  v-model="dialogData[language]" class="input-with-select">
+    <el-select v-model="language" slot="prepend" placeholder="请选择">
+      <el-option label="中文" value="name"></el-option>
+      <el-option label="英文" value="englishName"></el-option>
     </el-select>
   </el-input>
-
 <!-- 中英文切换结束 -->
-
-
-
   <span slot="footer" class="dialog-footer">
     <el-button @click="dialogVisible = false">取 消</el-button>
     <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
@@ -80,9 +74,9 @@ export default {
       //控制弹框的开关
       dialogVisible:false,
       dialogTitle:'',
-
       //初始化一个对象
-      dialogData:{}
+      dialogData:{},
+      language:'name'
     };
   },
   methods:{
@@ -142,7 +136,6 @@ export default {
         let oldObject = [];
         //循环遍历每个用户
         res.data.forEach((item) => {
-          console.log(item)
           let obj = {};
           obj.name = item.name["zh-CN"];
           //存一份英文名字
