@@ -1,5 +1,6 @@
 <template>
-  <el-table :data="tableData" style="width: 100%">
+<div>
+   <el-table :data="tableData" style="width: 100%">
     <el-table-column prop="name" label="名称" width="335"> </el-table-column>
     <el-table-column prop="address" label="地址" width="335"> </el-table-column>
     <el-table-column prop="address_1" label="地址" width="335">
@@ -19,54 +20,51 @@
     <el-table-column prop="position" label="关闭状态" width="335">
       <template slot-scope="scope">
         <el-switch
-        v-model="scope.row.suspended"
+        v-model="scope.row.isClosed"
         active-color="#3c8984"
         inactive-color="#dcdfe6">
       </el-switch>
       </template>
     </el-table-column>
   </el-table>
+  <!-- 分页区域 -->
+   <el-pagination
+    layout="prev, pager, next"
+    :total="50"
+    :page-size="10">
+  </el-pagination>
+  <!-- 分页区结束 -->
+</div>
+
 </template>
 
 <script>
 import { restaurantGet } from "@/api/restaurant/index";
 import _ from 'lodash'
-import moment from 'moment'
 export default {
   name: "Main",
   data() {
     return {
       tableData: [],
+      //初始化数据
+      tablePage:{
+        pageNum:1,
+      }
     };
   },
   methods:{
-    //checkClosed方法
+    //checkClosed方法,检测是否开关门
     checkClosed(item) {
       const closed = _.get(item, "closed", null);
       if (closed !== null) {
-        return false;
-      }
-      //获取当前时间
-      const m = moment.tz("America/New_York");
-      //获取纽约时间的分钟数
-      const mins = m.hours() * 60 + m.minute();
-      //获取当前是周几
-      const dayOfWeek = m.isoWeekday() - 1;
-      //拿到每个餐馆开始和结束时间
-      const start = _.get(item, `hours[${dayOfWeek}].start`, 0);
-      const end = _.get(item, `hours[${dayOfWeek}].end`, 0);
-      //返回的是排序好的结果
-      if (mins >= start && mins <= end) {
         return true;
-      } else {
-        return false;
       }
     },
   },
   mounted() {
+    //组件刚挂载时候所发的请求
     restaurantGet()
       .then((res) => {
-        console.log(res)
         //将后端返回来的请求数据灌进页面
         let oldObject = [];
         //循环遍历每个用户
@@ -75,11 +73,11 @@ export default {
           obj.name = item.name["zh-CN"];
           obj.address = item.address["formatted"];
           obj.tags = item.tags;
-          obj.canDeliver = item.canDeliver
+          //循环遍历每个函数，调用检查开关门函数
+          obj.isClosed=this.checkClosed(item)
           oldObject.push(obj);
         });
         this.tableData = oldObject;
-        console.log(this.tableData)
       })
       .catch((err) => {
         console.log(err);

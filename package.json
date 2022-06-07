@@ -14,6 +14,7 @@
     "element-ui": "^2.15.9",
     "lodash": "^4.17.21",
     "moment": "^2.29.3",
+    "moment-timezone": "^0.5.34",
     "node-polyfill-webpack-plugin": "^1.1.4",
     "vue": "^2.6.14",
     "vue-router": "^3.5.4"
