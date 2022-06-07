@@ -32,7 +32,7 @@
     layout="prev, pager, next"
     :total="50"
     :page-size="10">
-  </el-pagination>
+    </el-pagination>
   <!-- 分页区结束 -->
 </div>
 
