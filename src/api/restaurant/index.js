@@ -12,3 +12,8 @@ export function encode (str){
 export function restaurantGet(){
     return instance.get('/api/restaurant/location/-74.0059413,40.7127837')
     }
+
+export function  restaurantPost(data){
+    //向后端发送更改数据请求
+    return instance.post('/api/restaurant',data)
+}

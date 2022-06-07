@@ -1,67 +1,94 @@
 <template>
 <div>
-   <el-table :data="tableData" style="width: 100%">
-    <el-table-column prop="name" label="名称" width="335"> </el-table-column>
-    <el-table-column prop="address" label="地址" width="335"> </el-table-column>
-    <el-table-column prop="address_1" label="地址" width="335">
-      <template slot-scope="scope">
-        <el-tag v-for="item in scope.row.tags" :key="item">
-          {{ item }}
-        </el-tag>
-      </template>
-    </el-table-column>
-    <el-table-column prop="operation" label="操作" width="335">
-      <template>
-        <el-button>
-          操作
-        </el-button>
-      </template>
-    </el-table-column>
-    <el-table-column prop="position" label="关闭状态" width="335">
-      <template slot-scope="scope">
-        <el-switch
-        v-model="scope.row.isClosed"
-        active-color="#3c8984"
-        inactive-color="#dcdfe6">
-      </el-switch>
-      </template>
+   <el-table :data="tableData.slice((page-1)*limit,page*limit)" style="width: 100%">
+      <el-table-column prop="name" label="名称" width="335"> </el-table-column>
+      <el-table-column prop="address" label="地址" width="335"> </el-table-column>
+      <el-table-column prop="address_1" label="地址" width="335">
+        <template slot-scope="scope">
+          <el-tag v-for="item in scope.row.tags" :key="item">
+            {{item}}
+          </el-tag>
+        </template>
+      </el-table-column>
+      <el-table-column prop="operation" label="操作" width="335">
+        <template>
+          <el-button>
+            操作
+          </el-button>
+        </template>
+      </el-table-column>
+      <el-table-column prop="position" label="关闭状态" width="335">
+        <template slot-scope="scope">
+          <el-switch
+          v-model="scope.row.isClosed"
+          @change='changeClose(scope.row)'
+          active-color="#3c8984"
+          inactive-color="#dcdfe6">
+        </el-switch>
+        </template>
     </el-table-column>
   </el-table>
   <!-- 分页区域 -->
-   <el-pagination
-    layout="prev, pager, next"
-    :total="50"
-    :page-size="10">
-    </el-pagination>
+  <el-pagination
+  layout="prev, pager, next"
+  :total="tableData.length"
+    @current-change="changePage"
+  :page-size="limit">
+  </el-pagination>
   <!-- 分页区结束 -->
 </div>
 
 </template>
 
 <script>
-import { restaurantGet } from "@/api/restaurant/index";
+import { restaurantGet,restaurantPost } from "@/api/restaurant/index";
 import _ from 'lodash'
 export default {
   name: "Main",
   data() {
     return {
+      //整理出来的数据
       tableData: [],
       //初始化数据
-      tablePage:{
-        pageNum:1,
-      }
+      limit:10,
+      page:1
     };
   },
   methods:{
-    //checkClosed方法,检测是否开关门
+    //checkClosed方法,检测是否开关门,用响应式设置
     checkClosed(item) {
       const closed = _.get(item, "closed", null);
       if (closed !== null) {
         return true;
       }
     },
+    //改变页数
+   changePage(v){
+     this.page=v
+   },
+   changeClose({_id,isClosed}){
+     //当开关值改变向后端发送请求
+    //初始化一个空对象
+    let data = {}
+    //判定开关的状态，并准备data数据
+    if(isClosed){
+       data = { closed: { closed: true } };
+    }else{
+      data = { closed: { closed: null } };
+    }
+    //准备好的数据准备发请求
+    restaurantPost({data:data,id:_id}).then(res=>{
+       this.$message({
+          message: '恭喜你,更新成功',
+          type: 'success'
+        })
+    }).catch(err=>{
+         this.$message.error('更新失败');
+         console.log(err)
+    })
+   }
   },
-  mounted() {
+   created() {
     //组件刚挂载时候所发的请求
     restaurantGet()
       .then((res) => {
@@ -73,6 +100,8 @@ export default {
           obj.name = item.name["zh-CN"];
           obj.address = item.address["formatted"];
           obj.tags = item.tags;
+          //将用户的id传进去
+          obj._id = item._id;
           //循环遍历每个函数，调用检查开关门函数
           obj.isClosed=this.checkClosed(item)
           oldObject.push(obj);
@@ -86,8 +115,13 @@ export default {
 };
 </script>
 
-
 <style scoped>
+.el-pagination{
+  display: flex;
+  justify-content: right;
+  align-items: center;
+  height: 100px;
+}
 .el-tag {
   color: #3c8984;
 }
