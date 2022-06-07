@@ -24,13 +24,14 @@
         inactive-color="#dcdfe6">
       </el-switch>
       </template>
-     
     </el-table-column>
   </el-table>
 </template>
 
 <script>
 import { restaurantGet } from "@/api/restaurant/index";
+import _ from 'lodash'
+import moment from 'moment'
 export default {
   name: "Main",
   data() {
@@ -38,9 +39,34 @@ export default {
       tableData: [],
     };
   },
+  methods:{
+    //checkClosed方法
+    checkClosed(item) {
+      const closed = _.get(item, "closed", null);
+      if (closed !== null) {
+        return false;
+      }
+      //获取当前时间
+      const m = moment.tz("America/New_York");
+      //获取纽约时间的分钟数
+      const mins = m.hours() * 60 + m.minute();
+      //获取当前是周几
+      const dayOfWeek = m.isoWeekday() - 1;
+      //拿到每个餐馆开始和结束时间
+      const start = _.get(item, `hours[${dayOfWeek}].start`, 0);
+      const end = _.get(item, `hours[${dayOfWeek}].end`, 0);
+      //返回的是排序好的结果
+      if (mins >= start && mins <= end) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+  },
   mounted() {
     restaurantGet()
       .then((res) => {
+        console.log(res)
         //将后端返回来的请求数据灌进页面
         let oldObject = [];
         //循环遍历每个用户
