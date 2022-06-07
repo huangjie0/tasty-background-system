@@ -1,6 +1,6 @@
 <template>
 <div>
-   <el-table :data="tableData.slice((page-1)*limit,page*limit)" style="width: 100%">
+   <el-table :data="tableData.slice((page-1)*limit,page*limit)" style="width: 100%" v-loading="isShow">
       <el-table-column prop="name" label="名称" width="335"> </el-table-column>
       <el-table-column prop="address" label="地址" width="335"> </el-table-column>
       <el-table-column prop="address_1" label="地址" width="335">
@@ -11,8 +11,8 @@
         </template>
       </el-table-column>
       <el-table-column prop="operation" label="操作" width="335">
-        <template>
-          <el-button>
+        <template slot-scope="scope">
+          <el-button @click="openDialog(scope.row)">
             操作
           </el-button>
         </template>
@@ -36,6 +36,29 @@
   :page-size="limit">
   </el-pagination>
   <!-- 分页区结束 -->
+  <el-dialog
+  :title="dialogTitle"
+  :visible.sync="dialogVisible"
+  width="40%">
+
+<!-- 中英文切换 -->
+
+ <el-input placeholder="请输入内容"  v-model="dialogData.name" class="input-with-select">
+    <el-select v-model="select" slot="prepend" placeholder="请选择">
+      <el-option label="中文" value="1"></el-option>
+      <el-option label="英文" value="2"></el-option>
+    </el-select>
+  </el-input>
+
+<!-- 中英文切换结束 -->
+
+
+
+  <span slot="footer" class="dialog-footer">
+    <el-button @click="dialogVisible = false">取 消</el-button>
+    <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
+  </span>
+</el-dialog>
 </div>
 
 </template>
@@ -51,7 +74,15 @@ export default {
       tableData: [],
       //初始化数据
       limit:10,
-      page:1
+      page:1,
+      //初始化是关闭的
+      isShow:false,
+      //控制弹框的开关
+      dialogVisible:false,
+      dialogTitle:'',
+
+      //初始化一个对象
+      dialogData:{}
     };
   },
   methods:{
@@ -66,6 +97,16 @@ export default {
    changePage(v){
      this.page=v
    },
+   //点击按钮将弹框显示
+   openDialog(v){
+     //默认是关闭的，点击显示
+     this.dialogVisible=true
+     //当点击按钮时接受到的值,将名字赋值给按钮
+    this.dialogTitle = v.name
+    //调用lodash里面的深拷贝来进行赋值
+    this.dialogData = _.cloneDeep(v);
+
+   },
    changeClose({_id,isClosed}){
      //当开关值改变向后端发送请求
     //初始化一个空对象
@@ -78,13 +119,18 @@ export default {
     }
     //准备好的数据准备发请求
     restaurantPost({data:data,id:_id}).then(res=>{
-       this.$message({
-          message: '恭喜你,更新成功',
-          type: 'success'
-        })
+      //成功后将显示框打开
+        this.isShow=true
+        this.$message({
+            message: '恭喜你,更新成功',
+            type: 'success'
+          })
     }).catch(err=>{
          this.$message.error('更新失败');
          console.log(err)
+    }).finally(()=>{
+      //然后将弹框取消
+      this.isShow=false
     })
    }
   },
@@ -96,8 +142,11 @@ export default {
         let oldObject = [];
         //循环遍历每个用户
         res.data.forEach((item) => {
+          console.log(item)
           let obj = {};
           obj.name = item.name["zh-CN"];
+          //存一份英文名字
+          obj.englishName = item.name['en-US']
           obj.address = item.address["formatted"];
           obj.tags = item.tags;
           //将用户的id传进去
