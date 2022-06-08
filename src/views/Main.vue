@@ -131,8 +131,43 @@ export default {
       //初始化一个时间值
       timer: null,
       //初始化钟表时间值
-     
-     .
+      weeks:[{
+        weekDay:'星期一',
+         //初始化一个时间值
+        value1: [new Date(2016, 9, 10, 8, 40), new Date(2016, 9, 10, 9, 40)],
+      },
+        {
+          weekDay:'星期二',
+         //初始化一个时间值
+          value1: [new Date(2016, 9, 10, 8, 40), new Date(2016, 9, 10, 9, 40)],
+        },{
+          weekDay:'星期三',
+         //初始化一个时间值
+          value1: [new Date(2016, 9, 10, 8, 40), new Date(2016, 9, 10, 9, 40)],
+        },
+        {
+           weekDay:'星期四',
+         //初始化一个时间值
+          value1: [new Date(2016, 9, 10, 8, 40), new Date(2016, 9, 10, 9, 40)],
+        },
+        {
+           weekDay:'星期五',
+         //初始化一个时间值
+          value1: [new Date(2016, 9, 10, 8, 40), new Date(2016, 9, 10, 9, 40)],
+        },
+        {
+           weekDay:'星期六',
+         //初始化一个时间值
+          value1: [new Date(2016, 9, 10, 8, 40), new Date(2016, 9, 10, 9, 40)],
+        },
+        {
+          weekDay:'星期日',
+         //初始化一个时间值
+          value1: [new Date(2016, 9, 10, 8, 40), new Date(2016, 9, 10, 9, 40)],
+        }
+      ],
+      //默认星期
+      defaultWeek: [new Date(0, 0, 0, 0, 0), new Date(0, 0, 0, 0, 0)]
     };
   },
   methods: {
@@ -149,25 +184,45 @@ export default {
     },
     //点击按钮将弹框显示
     openDialog(v) {
+      console.log(v)
+
+      // ------------------------重组数据------------------------
+       //获取当前时间
+      const m = moment.tz("America/New_York");
+      //获取纽约时间的分钟数
+      const mins = m.hours() * 60 + m.minute();
+       //获取当前是周几
+      const dayOfWeek = m.isoWeekday() - 1;
+      //拿到每个餐馆开始和结束时间
+      const start = _.get(v, `hours[${dayOfWeek}].start`, 0);
+      const end = _.get(v, `hours[${dayOfWeek}].end`, 0);
+      console.log(start)
+      console.log(end)
+      // ------------------------重组数据------------------------
+
+
+
+
       //默认是关闭的，点击显示
       this.dialogVisible = true;
       //当点击按钮时接受到的值,将名字赋值给按钮
       this.dialogTitle = v.name;
       //调用lodash里面的深拷贝来进行赋值
       this.dialogData = _.cloneDeep(v);
+
     },
-    changeClose({_id,isClosed }) {
+    changeClose({_id,isClosed }){
       //当开关值改变向后端发送请求
       //初始化一个空对象
       let data = {};
       //判定开关的状态，并准备data数据
       if(isClosed) {
-        data = {closed:{closed:true} };
+        data = {closed:{closed:true}};
       } else {
         data = {closed:null};
       }
       //准备好的数据准备发请求
-      restaurantPost({ data: data, id: _id })
+      restaurantPost({ data: data, id: _id})
         .then(() => {
           //成功后将显示框打开
           this.isShow = true;
@@ -179,6 +234,7 @@ export default {
             let oldObject = [];
             //循环遍历每个用户
             res.data.forEach((item) => {
+              //准备一个空数组，将整理来的数据灌进去
               let obj = {};
               obj.name = item.name["zh-CN"];
               //存一份英文名字
@@ -189,6 +245,7 @@ export default {
               obj._id = item._id;
               //循环遍历每个函数，调用检查开关门函数
               obj.isClosed=this.checkClosed(item)
+
               oldObject.push(obj);
             });
             this.tableData = oldObject;
@@ -241,6 +298,8 @@ export default {
           obj.englishName = item.name["en-US"];
           obj.address = item.address["formatted"];
           obj.tags = item.tags;
+          //将时间灌进去
+          obj.hours = item.hours
           //将用户的id传进去
           obj._id = item._id;
           //循环遍历每个函数，调用检查开关门函数
