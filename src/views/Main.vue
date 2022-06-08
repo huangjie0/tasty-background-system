@@ -184,27 +184,30 @@ export default {
     },
     //点击按钮将弹框显示
     openDialog(v) {
-      console.log(v)
 
+      console.log(v)
+      console.log(v.hours)
       // ------------------------重组数据开始----------------------------
        //获取当前时间
       const m = moment.tz("America/New_York");
 
-      console.log(m)
+      // console.log(m)
       //获取纽约时间的分钟数
       const mins = m.hours() * 60 + m.minute();
 
-      console.log(mins)
+      // console.log(mins)
        //获取当前是周几
       const dayOfWeek = m.isoWeekday() - 1;
 
-      console.log(dayOfWeek)
+      // console.log(dayOfWeek)
+
       //拿到每个餐馆开始和结束时间
-      const start = _.get(v, `start`, 0);
-      const end = _.get(v, `end`, 0);
+      const start = _.get(v.hours,'',0);
+      
+      // const end = _.get(v,'end',0);
 
       console.log(start)
-      console.log(end)
+      // console.log(end)
       // ------------------------重组数据结束----------------------------
 
 
