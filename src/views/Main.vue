@@ -67,17 +67,19 @@
             />
         </el-select>
         <!-- 标签内容开始部分 -->
-        <el-tag v-for="item in dialogData.tags" :key="item" closable>
+        <el-tag v-for="item in dialogData.tags" :key="item" @close="removeTags(item)" closable>
           {{item}}
         </el-tag>
         <!-- 标签结束部分 -->
       </div>
+      <el-card>
+        {{time}}
+      </el-card>
       <!-- 点击按钮结束 -->
       <span slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false">取 消</el-button>
         <el-button type="primary" @click="dialogVisible = false"
-          >确 定</el-button
-        >
+          >确 定</el-button>
       </span>
     </el-dialog>
   </div>
@@ -86,6 +88,7 @@
 <script>
 import { restaurantGet, restaurantPost, getTags } from "@/api/restaurant/index";
 import _ from "lodash";
+import moment from 'moment-timezone';
 export default {
   name: "Main",
   data() {
@@ -99,6 +102,7 @@ export default {
       isShow: false,
       //控制弹框的开关
       dialogVisible: false,
+
       dialogTitle: "",
       //初始化一个对象
       dialogData: {},
@@ -107,7 +111,11 @@ export default {
       //初始化绑定tag值是空的
       tags: "",
       //从后端获取的tags灌进去，准备一个空数组
-      tags_1: [],
+      tags_1:[],
+      //时间数据
+      time:moment().locale('zh-cn').tz('America/New_York').format('YYYY-MM-DD HH:mm:ss dddd'),
+      //初始化一个时间值
+      timer: null,
     };
   },
   methods: {
@@ -167,28 +175,40 @@ export default {
               oldObject.push(obj);
             });
             this.tableData = oldObject;
-          //重新更新页面结束
-          this.$message({
-            message: "恭喜你,更新成功",
-            type: "success",
-          });
+            //重新更新页面结束
+            this.$message({
+              message: "恭喜你,更新成功",
+              type: "success",
+            })
           })
         .catch((err) => {
           this.$message.error("更新失败");
-          console.log(err);
         })
         .finally(() => {
           //然后将弹框取消
           this.isShow = false;
         });
     },
+    //添加按钮
     addTag(){
       //判断数组是否有这个元素
       if (this.dialogData.tags.indexOf(this.tags) == -1) {
         //将只有不存在的元素添加到tags里面
         this.dialogData.tags.push(this.tags)
       }
-    }
+    },
+    //移除标签
+    removeTags(item){
+      //接受到收到的item标签值
+      let index = this.dialogData.tags.indexOf(item)
+      this.dialogData.tags.splice(index, 1);
+    },
+    //定义一个秒钟走动函数
+    startTime() {
+    this.timer = setInterval(() => {
+      this.time = moment().locale('zh-cn').tz('America/New_York').format('YYYY-MM-DD HH:mm:ss dddd');
+    }, 1000);
+  },
   },
   created() {
     //组件刚挂载时候所发的请求
@@ -220,7 +240,16 @@ export default {
       //将数据灌进去
       this.tags_1=res.data
     });
+    //调用时间函数，每隔一秒调用
+    this.startTime()
   },
+  //组件销毁之前销毁定时器
+  beforeDestroy(){
+    //清除定时器,如果有则清除
+    if(this.timer){
+      clearInterval(this.timer)
+    }
+  }
 };
 </script>
 
