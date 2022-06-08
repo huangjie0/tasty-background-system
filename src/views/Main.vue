@@ -58,17 +58,17 @@
       <!-- 中英文切换结束 -->
       <!-- 点击切换按钮 -->
       <div class="tag-container">
-        <el-select v-model="tags" @change="addTag" placeholder="请选择">
-          <el-option
-            v-for="tag in tags_1"
-            :key="tag"
-            :label="tag"
-            :value="tag"
-          />
+          <el-select v-model="tags" @change="addTag" placeholder="请选择">
+            <el-option
+              v-for="tag in tags_1"
+              :key="tag"
+              :label="tag"
+              :value="tag"
+            />
         </el-select>
         <!-- 标签内容开始部分 -->
         <el-tag v-for="item in dialogData.tags" :key="item" closable>
-          {{ item }}
+          {{item}}
         </el-tag>
         <!-- 标签结束部分 -->
       </div>
@@ -131,45 +131,48 @@ export default {
       //调用lodash里面的深拷贝来进行赋值
       this.dialogData = _.cloneDeep(v);
     },
-    changeClose({ _id, isClosed }) {
+    changeClose({_id,isClosed }) {
       //当开关值改变向后端发送请求
       //初始化一个空对象
       let data = {};
       //判定开关的状态，并准备data数据
-      if (isClosed) {
-        data = { closed: { closed: true } };
+      if(isClosed) {
+        data = {closed:{closed:true} };
       } else {
-        data = { closed: { closed: null } };
+        data = {closed:null};
       }
       //准备好的数据准备发请求
       restaurantPost({ data: data, id: _id })
-        .then((res) => {
+        .then(() => {
           //成功后将显示框打开
           this.isShow = true;
+          //返回一个promise对象
+          return restaurantGet()
+        }).then(res=>{
+          //重新更新页面开始
+            //将后端返回来的请求数据灌进页面
+            let oldObject = [];
+            //循环遍历每个用户
+            res.data.forEach((item) => {
+              let obj = {};
+              obj.name = item.name["zh-CN"];
+              //存一份英文名字
+              obj.englishName = item.name['en-US']
+              obj.address = item.address["formatted"];
+              obj.tags = item.tags;
+              //将用户的id传进去
+              obj._id = item._id;
+              //循环遍历每个函数，调用检查开关门函数
+              obj.isClosed=this.checkClosed(item)
+              oldObject.push(obj);
+            });
+            this.tableData = oldObject;
+          //重新更新页面结束
           this.$message({
             message: "恭喜你,更新成功",
             type: "success",
           });
-          // restaurantGet().then(res=>{
-          //   //将后端返回来的请求数据灌进页面
-          //   let oldObject = [];
-          //   //循环遍历每个用户
-          //   res.data.forEach((item) => {
-          //     let obj = {};
-          //     obj.name = item.name["zh-CN"];
-          //     //存一份英文名字
-          //     obj.englishName = item.name['en-US']
-          //     obj.address = item.address["formatted"];
-          //     obj.tags = item.tags;
-          //     //将用户的id传进去
-          //     obj._id = item._id;
-          //     //循环遍历每个函数，调用检查开关门函数
-          //     obj.isClosed=this.checkClosed(item)
-          //     oldObject.push(obj);
-          //   });
-          //   this.tableData = oldObject;
-          // })
-        })
+          })
         .catch((err) => {
           this.$message.error("更新失败");
           console.log(err);
@@ -180,11 +183,10 @@ export default {
         });
     },
     addTag(){
-       // * 如果tags中没有，才放入
-      if (this.tags_1.indexOf(this.tags)==-1) {
+      //判断数组是否有这个元素
+      if (this.dialogData.tags.indexOf(this.tags) == -1) {
         //将只有不存在的元素添加到tags里面
-        
-        this.tags_1.push(this.tags)
+        this.dialogData.tags.push(this.tags)
       }
     }
   },
@@ -215,6 +217,7 @@ export default {
       });
     //发送请求获取tags内容
     getTags().then((res) => {
+      //将数据灌进去
       this.tags_1=res.data
     });
   },
