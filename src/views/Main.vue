@@ -76,14 +76,18 @@
         {{time}}
       </el-card>
       <!-- 时间标签 -->
-      <el-time-picker
-      is-range
-      v-model="value1"
-      range-separator="至"
-      start-placeholder="开始时间"
-      end-placeholder="结束时间"
-      placeholder="选择时间范围">
-      </el-time-picker>
+      <div v-for="item in weeks" :key="item.weekDay">
+        {{item.weekDay}}
+        <el-time-picker
+        is-range
+        v-model="item.value1"
+        range-separator="至"
+        start-placeholder="开始时间"
+        end-placeholder="结束时间"
+        placeholder="选择时间范围"
+        >
+        </el-time-picker>
+      </div>
       <!-- 时间结束 -->
       <!-- 点击按钮结束 -->
       <span slot="footer" class="dialog-footer">
@@ -126,6 +130,9 @@ export default {
       time:moment().locale('zh-cn').tz('America/New_York').format('YYYY-MM-DD HH:mm:ss dddd'),
       //初始化一个时间值
       timer: null,
+      //初始化钟表时间值
+     
+     .
     };
   },
   methods: {
