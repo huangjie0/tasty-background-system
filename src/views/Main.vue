@@ -177,6 +177,7 @@ export default {
         return true;
       }
     },
+//---------------------------------------------------------------------------------------
     //定义一个将时间毫秒转换为时分秒
     formatSeconds(value) {
         var secondTime = parseInt(value);// 秒
@@ -205,6 +206,7 @@ export default {
         }
         return result;
     },
+//-------------------------------------------------------------------------------------
     //改变页数
     changePage(v) {
       this.page = v;
@@ -224,7 +226,12 @@ export default {
             //先将开始进行将分钟变成秒
 // ----------------------------------------------------------------------------------------
             let mSecond= item.start*60*1000
+
+
             console.log(this.formatSeconds(mSecond))
+
+
+
           }else{
             //如果没有则使用默认值为0
             everyWeek.start = 0
@@ -233,7 +240,9 @@ export default {
            if(item.end){
              //将页面时间进行小时制
               //先将结束将分钟变成秒
-             everyWeek.end = item.end/60
+              let endmScond = item.end*60*1000
+              console.log('---------------------------------------')
+              console.log(this.formatSeconds(endmScond))
            }else{
              everyWeek.end = 0
            }
@@ -254,7 +263,7 @@ export default {
       //发请求更新数据
 
 
-      // .........................................
+
     },
     changeClose({_id,isClosed }){
       //当开关值改变向后端发送请求
