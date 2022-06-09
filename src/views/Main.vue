@@ -93,7 +93,7 @@
       <!-- 点击按钮结束 -->
       <span slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="dialogVisible = false"
+        <el-button type="primary" @click="dialogVisible = determine"
           >确 定</el-button>
       </span>
     </el-dialog>
@@ -185,7 +185,7 @@ export default {
     },
     //点击按钮将弹框显示
     openDialog(v) {
-
+      console.log(v)
       // ------------------------重组数据开始----------------------------
        //获取当前时间
       // const m = moment.tz("America/New_York");
@@ -198,16 +198,39 @@ export default {
        //获取当前是周几
       // const dayOfWeek = m.isoWeekday() - 1;
 
-      v.hours.forEach(item=>{
-        console.log(item)
-      })
+      //准备空数组，专门接受所遍历的开始和结束的值和所需要时间值
+      let everyWeek = []
+ 
+      if(v.hours){
+        v.hours.forEach(item=>{
+          //准备一个空对象，收集好遍历每一个元素集合--------------------------------------
+          let everyWeek = {}
+          //收集每一个开始时间
+          if(item.start){
+            //如果有往里面灌数据
+            everyWeek.start = item.start
+          }else{
+            //如果没有则使用默认值为0
+            everyWeek.start = 0
+          }
+           //准备一个空对象，收集好遍历每一个元素集合--------------------------------------
 
+           //收集好每一个结束时间-----------------------------------------
+           if(item.end){
+             everyWeek.end = item.end
+           }else{
+             everyWeek.end = 0
+           }
+           //收集好每一个结束时间-----------------------------------------
+          if(item.dayOfWeek){
+            everyWeek.dayOfWeek = item.dayOfWeek
+          }else{
+            everyWeek.dayOfWeek = 
+          }
+        })
+      }
 
-      //拿到每个餐馆开始和结束时间
-      // console.log(end)
-      // ------------------------重组数据结束----------------------------
-
-
+      
 
 
       //默认是关闭的，点击显示
@@ -216,6 +239,11 @@ export default {
       this.dialogTitle = v.name;
       //调用lodash里面的深拷贝来进行赋值
       this.dialogData = _.cloneDeep(v);
+    },
+    determine(){
+      //当用户点击了确定按钮时候关闭弹框
+      this.dialogVisible=false;
+
     },
     changeClose({_id,isClosed }){
       //当开关值改变向后端发送请求
