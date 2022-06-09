@@ -85,6 +85,7 @@
         start-placeholder="开始时间"
         end-placeholder="结束时间"
         placeholder="选择时间范围"
+        arrow-control
         >
         </el-time-picker>
       </div>
@@ -139,31 +140,31 @@ export default {
         {
           weekDay:'星期二',
          //初始化一个时间值
-          value1: [new Date(2016, 9, 10, 8, 40), new Date(2016, 9, 10, 9, 40)],
+          value1: [new Date(2015, 9, 10, 8, 40), new Date(2015, 9, 10, 9, 40)],
         },{
           weekDay:'星期三',
          //初始化一个时间值
-          value1: [new Date(2016, 9, 10, 8, 40), new Date(2016, 9, 10, 9, 40)],
+          value1: [new Date(2017, 9, 10, 8, 40), new Date(2017, 9, 10, 9, 40)],
         },
         {
            weekDay:'星期四',
          //初始化一个时间值
-          value1: [new Date(2016, 9, 10, 8, 40), new Date(2016, 9, 10, 9, 40)],
+          value1: [new Date(2018, 9, 10, 8, 40), new Date(2018, 9, 10, 9, 40)],
         },
         {
            weekDay:'星期五',
          //初始化一个时间值
-          value1: [new Date(2016, 9, 10, 8, 40), new Date(2016, 9, 10, 9, 40)],
+          value1: [new Date(2019, 9, 10, 8, 40), new Date(2019, 9, 10, 9, 40)],
         },
         {
            weekDay:'星期六',
          //初始化一个时间值
-          value1: [new Date(2016, 9, 10, 8, 40), new Date(2016, 9, 10, 9, 40)],
+          value1: [new Date(2012, 9, 10, 8, 40), new Date(2012, 9, 10, 9, 40)],
         },
         {
           weekDay:'星期日',
          //初始化一个时间值
-          value1: [new Date(2016, 9, 10, 8, 40), new Date(2016, 9, 10, 9, 40)],
+          value1: [new Date(2011, 9, 10, 8, 40), new Date(2011, 9, 10, 9, 40)],
         }
       ],
       //默认星期
@@ -185,28 +186,24 @@ export default {
     //点击按钮将弹框显示
     openDialog(v) {
 
-      console.log(v)
-      console.log(v.hours)
       // ------------------------重组数据开始----------------------------
        //获取当前时间
-      const m = moment.tz("America/New_York");
+      // const m = moment.tz("America/New_York");
 
       // console.log(m)
       //获取纽约时间的分钟数
-      const mins = m.hours() * 60 + m.minute();
+      // const mins = m.hours() * 60 + m.minute();
 
       // console.log(mins)
        //获取当前是周几
-      const dayOfWeek = m.isoWeekday() - 1;
+      // const dayOfWeek = m.isoWeekday() - 1;
 
-      // console.log(dayOfWeek)
+      v.hours.forEach(item=>{
+        console.log(item)
+      })
+
 
       //拿到每个餐馆开始和结束时间
-      const start = _.get(v.hours,'',0);
-      
-      // const end = _.get(v,'end',0);
-
-      console.log(start)
       // console.log(end)
       // ------------------------重组数据结束----------------------------
 
@@ -219,7 +216,6 @@ export default {
       this.dialogTitle = v.name;
       //调用lodash里面的深拷贝来进行赋值
       this.dialogData = _.cloneDeep(v);
-
     },
     changeClose({_id,isClosed }){
       //当开关值改变向后端发送请求
@@ -255,7 +251,6 @@ export default {
               obj._id = item._id;
               //循环遍历每个函数，调用检查开关门函数
               obj.isClosed=this.checkClosed(item)
-
               oldObject.push(obj);
             });
             this.tableData = oldObject;
