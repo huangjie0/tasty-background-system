@@ -85,7 +85,6 @@
         start-placeholder="开始时间"
         end-placeholder="结束时间"
         placeholder="选择时间范围"
-        arrow-control
         >
         </el-time-picker>
       </div>
@@ -141,31 +140,31 @@ export default {
         {
           weekDay:'星期二',
          //初始化一个时间值
-          value1: [new Date(2015, 9, 10, 8, 40), new Date(2015, 9, 10, 9, 40)],
+          value1: [new Date(2016, 9, 10, 8, 40), new Date(2016, 9, 10, 9, 40)],
         },{
           weekDay:'星期三',
          //初始化一个时间值
-          value1: [new Date(2017, 9, 10, 8, 40), new Date(2017, 9, 10, 9, 40)],
+          value1: [new Date(2016, 9, 10, 8, 40), new Date(2016, 9, 10, 9, 40)],
         },
         {
            weekDay:'星期四',
          //初始化一个时间值
-          value1: [new Date(2018, 9, 10, 8, 40), new Date(2018, 9, 10, 9, 40)],
+          value1: [new Date(2016, 9, 10, 8, 40), new Date(2016, 9, 10, 9, 40)],
         },
         {
            weekDay:'星期五',
          //初始化一个时间值
-          value1: [new Date(2019, 9, 10, 8, 40), new Date(2019, 9, 10, 9, 40)],
+          value1: [new Date(2016, 9, 10, 8, 40), new Date(2016, 9, 10, 9, 40)],
         },
         {
            weekDay:'星期六',
          //初始化一个时间值
-          value1: [new Date(2012, 9, 10, 8, 40), new Date(2012, 9, 10, 9, 40)],
+            value1: [new Date(2016, 9, 10, 8, 40), new Date(2016, 9, 10, 9, 40)],
         },
         {
           weekDay:'星期日',
          //初始化一个时间值
-          value1: [new Date(2011, 9, 10, 8, 40), new Date(2011, 9, 10, 9, 40)],
+          value1: [new Date(2016, 9, 10, 8, 40), new Date(2016, 9, 10, 9, 40)],
         }
       ]
     };
@@ -177,6 +176,34 @@ export default {
       if (closed !== null) {
         return true;
       }
+    },
+    //定义一个将时间毫秒转换为时分秒
+    formatSeconds(value) {
+        var secondTime = parseInt(value);// 秒
+        var minuteTime = 0;// 分
+        var hourTime = 0;// 小时
+        if(secondTime > 60) {//如果秒数大于60，将秒数转换成整数
+            //获取分钟，除以60取整数，得到整数分钟
+            minuteTime = parseInt(secondTime / 60);
+            //获取秒数，秒数取余，得到整数秒数
+            secondTime = parseInt(secondTime % 60);
+            //如果分钟大于60，将分钟转换成小时
+            if(minuteTime > 60) {
+                //获取小时，获取分钟除以60，得到整数小时
+                hourTime = parseInt(minuteTime / 60);
+                //获取小时后取余的分，获取分钟除以60取余的分
+                minuteTime = parseInt(minuteTime % 60);
+            }
+        }
+        var result = "" + parseInt(secondTime) + "秒";
+
+        if(minuteTime > 0) {
+          result = "" + parseInt(minuteTime) + "分" + result;
+        }
+        if(hourTime > 0) {
+          result = "" + parseInt(hourTime) + "小时" + result;
+        }
+        return result;
     },
     //改变页数
     changePage(v) {
@@ -196,8 +223,8 @@ export default {
             //将页面时间进行小时制
             //先将开始进行将分钟变成秒
 // ----------------------------------------------------------------------------------------
-            everyWeek.start = item.start/60
-            // ------------------------------------------------------------------------
+            let mSecond= item.start*60*1000
+            console.log(this.formatSeconds(mSecond))
           }else{
             //如果没有则使用默认值为0
             everyWeek.start = 0
@@ -214,7 +241,6 @@ export default {
           everyWeek_1.push(everyWeek)
         })
       }
-          console.log(everyWeek_1)
       //默认是关闭的，点击显示
       this.dialogVisible = true;
       //当点击按钮时接受到的值,将名字赋值给按钮
@@ -226,6 +252,9 @@ export default {
       //当用户点击了确定按钮时候关闭弹框
       this.dialogVisible=false;
       //发请求更新数据
+
+
+      // .........................................
     },
     changeClose({_id,isClosed }){
       //当开关值改变向后端发送请求
