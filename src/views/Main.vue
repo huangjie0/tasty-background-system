@@ -225,8 +225,18 @@ export default {
           if(item.dayOfWeek){
             everyWeek.dayOfWeek = item.dayOfWeek
           }else{
-            everyWeek.dayOfWeek = 
+            // everyWeek.dayOfWeek = 
           }
+
+          //收集好每一个支付方式---------------------------------------------
+          if(item.type){
+            everyWeek.type = item.type
+          }else{
+            //默认的是支付宝形式
+            everyWeek.type='delivery'
+          }
+          //将收集好的集合灌到准备好的everyWeek数据中
+          this.everyWeek.push(everyWeek)
         })
       }
 
