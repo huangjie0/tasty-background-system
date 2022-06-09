@@ -80,7 +80,7 @@
         {{item.weekDay}}
         <el-time-picker
         is-range
-        v-model="item.value1"
+        v-model="value"
         range-separator="至"
         start-placeholder="开始时间"
         end-placeholder="结束时间"
@@ -103,7 +103,6 @@
 import { restaurantGet, restaurantPost, getTags } from "@/api/restaurant/index";
 import _ from "lodash";
 import moment from 'moment-timezone';
-import moment_1 from 'moment'
 export default {
   name: "Main",
   data() {
@@ -131,42 +130,33 @@ export default {
       time:moment().locale('zh-cn').tz('America/New_York').format('YYYY-MM-DD HH:mm:ss dddd'),
       //初始化一个时间值
       timer: null,
+      //初始化一个整理出来的时间数组
+      everyWeek_2:[],
       //初始化钟表时间值
       weeks:[{
         weekDay:'星期一',
-         //初始化一个时间值
-        value1: [new Date(2016, 9, 10, 8, 40), new Date(2016, 9, 10, 9, 40)],
       },
         {
           weekDay:'星期二',
-         //初始化一个时间值
-          value1: [new Date(2016, 9, 10, 8, 40), new Date(2016, 9, 10, 9, 40)],
         },{
           weekDay:'星期三',
-         //初始化一个时间值
-          value1: [new Date(2016, 9, 10, 8, 40), new Date(2016, 9, 10, 9, 40)],
         },
         {
            weekDay:'星期四',
-         //初始化一个时间值
-          value1: [new Date(2016, 9, 10, 8, 40), new Date(2016, 9, 10, 9, 40)],
         },
         {
            weekDay:'星期五',
-         //初始化一个时间值
-          value1: [new Date(2016, 9, 10, 8, 40), new Date(2016, 9, 10, 9, 40)],
         },
         {
            weekDay:'星期六',
-         //初始化一个时间值
-            value1: [new Date(2016, 9, 10, 8, 40), new Date(2016, 9, 10, 9, 40)],
         },
         {
           weekDay:'星期日',
-         //初始化一个时间值
-          value1: [new Date(2016, 9, 10, 8, 40), new Date(2016, 9, 10, 9, 40)],
         }
-      ]
+      ],
+      //初始化一个时间值
+      
+      value:[new Date(2016, 9, 10, 8, 40), new Date(2016, 9, 10, 9, 40)],
     };
   },
   methods: {
@@ -234,7 +224,7 @@ export default {
           //将收集好的集合灌到准备好的everyWeek数据中
           everyWeek_1.push(everyWeek)
         })
-        console.log(everyWeek_1)
+        this.everyWeek_2 = everyWeek_1
       }
       //默认是关闭的，点击显示
       this.dialogVisible = true;
