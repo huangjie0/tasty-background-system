@@ -177,76 +177,64 @@ export default {
         return true;
       }
     },
-//---------------------------------------------------------------------------------------
     //定义一个将时间毫秒转换为时分秒
     formatSeconds(value) {
         var secondTime = parseInt(value);// 秒
         var minuteTime = 0;// 分
-        var hourTime = 0;// 小时
         if(secondTime > 60) {//如果秒数大于60，将秒数转换成整数
             //获取分钟，除以60取整数，得到整数分钟
             minuteTime = parseInt(secondTime / 60);
-            //获取秒数，秒数取余，得到整数秒数
-            secondTime = parseInt(secondTime % 60);
             //如果分钟大于60，将分钟转换成小时
             if(minuteTime > 60) {
-                //获取小时，获取分钟除以60，得到整数小时
-                hourTime = parseInt(minuteTime / 60);
                 //获取小时后取余的分，获取分钟除以60取余的分
                 minuteTime = parseInt(minuteTime % 60);
             }
         }
-        var result = "" + parseInt(secondTime) + "秒";
-
         if(minuteTime > 0) {
-          result = "" + parseInt(minuteTime) + "分" + result;
+          return parseInt(minuteTime)
         }
-        if(hourTime > 0) {
-          result = "" + parseInt(hourTime) + "小时" + result;
-        }
-        return result;
     },
-//-------------------------------------------------------------------------------------
     //改变页数
     changePage(v) {
       this.page = v;
     },
     //点击按钮将弹框显示
     openDialog(v) {
-      //准备空数组，专门接受所遍历的开始和结束的值和所需要时间值
-      let everyWeek_1 = []
       if(v.hours){
+         //准备空数组，专门接受所遍历的开始和结束的值和所需要时间值
+        let everyWeek_1 = []
         v.hours.forEach(item=>{
-          //准备一个空对象，收集好遍历每一个元素集合--------------------------------------
+        //准备一个空对象，收集好遍历每一个元素集合--------------------------------------
           let everyWeek = {}
           //收集每一个开始时间
           if(item.start){
             //如果有往里面灌数据
-            //将页面时间进行小时制
-            //先将开始进行将分钟变成秒
 // ----------------------------------------------------------------------------------------
-            let mSecond= item.start*60*1000
-            console.log(this.formatSeconds(mSecond))
-
-
-
+            let shour= Math.ceil(item.start/60)
+            let sminutes = this.formatSeconds(item.start)
+            everyWeek.shour = shour;
+            everyWeek.sminutes = sminutes;
           }else{
             //如果没有则使用默认值为0
-            everyWeek.start = 0
+            everyWeek.shour = 0
+            everyWeek.sminutes=0
           }
            //收集好每一个结束时间-----------------------------------------
            if(item.end){
              //将页面时间进行小时制
               //先将结束将分钟变成秒
-              let endmScond = item.end*60*1000
-              console.log('---------------------------------------')
-              console.log(this.formatSeconds(endmScond))
+              let ehour= Math.ceil(item.end/60)
+              let eminutes = this.formatSeconds(item.end)
+              everyWeek.ehour = ehour;
+              everyWeek.eminutes = eminutes;
            }else{
-             everyWeek.end = 0
+             everyWeek.ehour = 0
+             everyWeek.eminutes=0
            }
           //将收集好的集合灌到准备好的everyWeek数据中
           everyWeek_1.push(everyWeek)
         })
+        console.log(everyWeek_1)
       }
       //默认是关闭的，点击显示
       this.dialogVisible = true;
@@ -259,7 +247,6 @@ export default {
       //当用户点击了确定按钮时候关闭弹框
       this.dialogVisible=false;
       //发请求更新数据
-
 
 
     },
