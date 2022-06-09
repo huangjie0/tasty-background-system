@@ -195,13 +195,8 @@ export default {
             //如果有往里面灌数据
             //将页面时间进行小时制
             //先将开始进行将分钟变成秒
-            let second = item.start*60
-            var d = moment.duration(second, 'milliseconds');
-            var hours = Math.floor(d.asHours());
-            var mins = Math.floor(d.asMinutes()) - hours * 60;
-            console.log("hours:" + hours + " mins:" + mins)
 // ----------------------------------------------------------------------------------------
-            everyWeek.start = item.start
+            everyWeek.start = item.start/60
             // ------------------------------------------------------------------------
           }else{
             //如果没有则使用默认值为0
@@ -211,7 +206,7 @@ export default {
            if(item.end){
              //将页面时间进行小时制
               //先将结束将分钟变成秒
-             everyWeek.end = item.end*60
+             everyWeek.end = item.end/60
            }else{
              everyWeek.end = 0
            }
