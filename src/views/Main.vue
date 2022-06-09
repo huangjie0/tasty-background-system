@@ -199,8 +199,8 @@ export default {
       // const dayOfWeek = m.isoWeekday() - 1;
 
       //准备空数组，专门接受所遍历的开始和结束的值和所需要时间值
-      let everyWeek = []
  
+      let everyWeek_1 = []
       if(v.hours){
         v.hours.forEach(item=>{
           //准备一个空对象，收集好遍历每一个元素集合--------------------------------------
@@ -208,25 +208,20 @@ export default {
           //收集每一个开始时间
           if(item.start){
             //如果有往里面灌数据
-            everyWeek.start = item.start
+            //将页面时间进行小时制
+            everyWeek.start = item.start/60
           }else{
             //如果没有则使用默认值为0
             everyWeek.start = 0
           }
-           //准备一个空对象，收集好遍历每一个元素集合--------------------------------------
 
            //收集好每一个结束时间-----------------------------------------
            if(item.end){
-             everyWeek.end = item.end
+             //将页面时间进行小时制
+             everyWeek.end = item.end/60
            }else{
              everyWeek.end = 0
            }
-           //收集好每一个结束时间-----------------------------------------
-          if(item.dayOfWeek){
-            everyWeek.dayOfWeek = item.dayOfWeek
-          }else{
-            // everyWeek.dayOfWeek = 
-          }
 
           //收集好每一个支付方式---------------------------------------------
           if(item.type){
@@ -236,9 +231,10 @@ export default {
             everyWeek.type='delivery'
           }
           //将收集好的集合灌到准备好的everyWeek数据中
-          this.everyWeek.push(everyWeek)
+          everyWeek_1.push(everyWeek)
         })
       }
+      console.log(everyWeek_1)
 
       
 
