@@ -104,6 +104,7 @@
 import { restaurantGet, restaurantPost, getTags } from "@/api/restaurant/index";
 import _ from "lodash";
 import moment from 'moment-timezone';
+import moment_1 from 'moment'
 export default {
   name: "Main",
   data() {
@@ -166,9 +167,7 @@ export default {
          //初始化一个时间值
           value1: [new Date(2011, 9, 10, 8, 40), new Date(2011, 9, 10, 9, 40)],
         }
-      ],
-      //默认星期
-      defaultWeek: [new Date(0, 0, 0, 0, 0), new Date(0, 0, 0, 0, 0)]
+      ]
     };
   },
   methods: {
@@ -185,21 +184,7 @@ export default {
     },
     //点击按钮将弹框显示
     openDialog(v) {
-      console.log(v)
-      // ------------------------重组数据开始----------------------------
-       //获取当前时间
-      // const m = moment.tz("America/New_York");
-
-      // console.log(m)
-      //获取纽约时间的分钟数
-      // const mins = m.hours() * 60 + m.minute();
-
-      // console.log(mins)
-       //获取当前是周几
-      // const dayOfWeek = m.isoWeekday() - 1;
-
       //准备空数组，专门接受所遍历的开始和结束的值和所需要时间值
- 
       let everyWeek_1 = []
       if(v.hours){
         v.hours.forEach(item=>{
@@ -209,36 +194,32 @@ export default {
           if(item.start){
             //如果有往里面灌数据
             //将页面时间进行小时制
-            everyWeek.start = item.start/60
+            //先将开始进行将分钟变成秒
+            let second = item.start*60
+            var d = moment.duration(second, 'milliseconds');
+            var hours = Math.floor(d.asHours());
+            var mins = Math.floor(d.asMinutes()) - hours * 60;
+            console.log("hours:" + hours + " mins:" + mins)
+// ----------------------------------------------------------------------------------------
+            everyWeek.start = item.start
+            // ------------------------------------------------------------------------
           }else{
             //如果没有则使用默认值为0
             everyWeek.start = 0
           }
-
            //收集好每一个结束时间-----------------------------------------
            if(item.end){
              //将页面时间进行小时制
-             everyWeek.end = item.end/60
+              //先将结束将分钟变成秒
+             everyWeek.end = item.end*60
            }else{
              everyWeek.end = 0
            }
-
-          //收集好每一个支付方式---------------------------------------------
-          if(item.type){
-            everyWeek.type = item.type
-          }else{
-            //默认的是支付宝形式
-            everyWeek.type='delivery'
-          }
           //将收集好的集合灌到准备好的everyWeek数据中
           everyWeek_1.push(everyWeek)
         })
       }
-      console.log(everyWeek_1)
-
-      
-
-
+          console.log(everyWeek_1)
       //默认是关闭的，点击显示
       this.dialogVisible = true;
       //当点击按钮时接受到的值,将名字赋值给按钮
@@ -249,7 +230,7 @@ export default {
     determine(){
       //当用户点击了确定按钮时候关闭弹框
       this.dialogVisible=false;
-
+      //发请求更新数据
     },
     changeClose({_id,isClosed }){
       //当开关值改变向后端发送请求
