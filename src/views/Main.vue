@@ -226,8 +226,6 @@ export default {
             //先将开始进行将分钟变成秒
 // ----------------------------------------------------------------------------------------
             let mSecond= item.start*60*1000
-
-
             console.log(this.formatSeconds(mSecond))
 
 
