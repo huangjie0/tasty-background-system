@@ -58,42 +58,53 @@
       <!-- 中英文切换结束 -->
       <!-- 点击切换按钮 -->
       <div class="tag-container">
-          <el-select v-model="tags" @change="addTag" placeholder="请选择">
-            <el-option
-              v-for="tag in tags_1"
-              :key="tag"
-              :label="tag"
-              :value="tag"
-            />
+        <el-select v-model="tags" @change="addTag" placeholder="请选择">
+          <el-option
+            v-for="tag in tags_1"
+            :key="tag"
+            :label="tag"
+            :value="tag"
+          />
         </el-select>
         <!-- 标签内容开始部分 -->
-        <el-tag v-for="item in dialogData.tags" :key="item" @close="removeTags(item)" closable>
-          {{item}}
+        <el-tag
+          v-for="item in dialogData.tags"
+          :key="item"
+          @close="removeTags(item)"
+          closable
+        >
+          {{ item }}
         </el-tag>
         <!-- 标签结束部分 -->
       </div>
       <el-card>
-        {{time}}
+        {{ time }}
       </el-card>
+
+
       <!-- 时间标签 -->
-      <div v-for="item in weeks" :key="item.weekDay">
-        {{item.weekDay}}
+      <div v-for="(item, index) in dialogData.time" :key="week[index]">
+        <span>{{ week[index] }}</span>
         <el-time-picker
-        is-range
-        v-model="value"
-        range-separator="至"
-        start-placeholder="开始时间"
-        end-placeholder="结束时间"
-        placeholder="选择时间范围"
-        >
-        </el-time-picker>
+          v-model="dialogData.time[index]"
+          is-range
+          range-separator="至"
+          start-placeholder="开始时间"
+          end-placeholder="结束时间"
+          placeholder="选择时间范围"
+        />
       </div>
       <!-- 时间结束 -->
+
+
+
+      
       <!-- 点击按钮结束 -->
       <span slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false">取 消</el-button>
         <el-button type="primary" @click="dialogVisible = determine"
-          >确 定</el-button>
+          >确 定</el-button
+        >
       </span>
     </el-dialog>
   </div>
@@ -102,7 +113,7 @@
 <script>
 import { restaurantGet, restaurantPost, getTags } from "@/api/restaurant/index";
 import _ from "lodash";
-import moment from 'moment-timezone';
+import moment from "moment-timezone";
 export default {
   name: "Main",
   data() {
@@ -125,38 +136,25 @@ export default {
       //初始化绑定tag值是空的
       tags: "",
       //从后端获取的tags灌进去，准备一个空数组
-      tags_1:[],
+      tags_1: [],
       //时间数据
-      time:moment().locale('zh-cn').tz('America/New_York').format('YYYY-MM-DD HH:mm:ss dddd'),
+      time: moment()
+        .locale("zh-cn")
+        .tz("America/New_York")
+        .format("YYYY-MM-DD HH:mm:ss dddd"),
       //初始化一个时间值
       timer: null,
       //初始化一个整理出来的时间数组
-      everyWeek_2:[],
-      //初始化钟表时间值
-      weeks:[{
-        weekDay:'星期一',
-      },
-        {
-          weekDay:'星期二',
-        },{
-          weekDay:'星期三',
-        },
-        {
-           weekDay:'星期四',
-        },
-        {
-           weekDay:'星期五',
-        },
-        {
-           weekDay:'星期六',
-        },
-        {
-          weekDay:'星期日',
-        }
+      everyWeek_2: [],
+      week: [
+        "星期一",
+        "星期二",
+        "星期三",
+        "星期四",
+        "星期五",
+        "星期六",
+        "星期日",
       ],
-      //初始化一个时间值
-      
-      value:[new Date(2016, 9, 10, 8, 40), new Date(2016, 9, 10, 9, 40)],
     };
   },
   methods: {
@@ -167,22 +165,23 @@ export default {
         return true;
       }
     },
-    //定义一个将时间毫秒转换为时分秒
-    formatSeconds(value) {
-        var secondTime = parseInt(value);// 秒
-        var minuteTime = 0;// 分
-        if(secondTime > 60) {//如果秒数大于60，将秒数转换成整数
-            //获取分钟，除以60取整数，得到整数分钟
-            minuteTime = parseInt(secondTime / 60);
-            //如果分钟大于60，将分钟转换成小时
-            if(minuteTime > 60) {
-                //获取小时后取余的分，获取分钟除以60取余的分
-                minuteTime = parseInt(minuteTime % 60);
-            }
-        }
-        if(minuteTime > 0) {
-          return parseInt(minuteTime)
-        }
+    //定义设置时间函数，整理所需要的time时间
+    settime(v){
+      _.forEach(v,(item)=>{
+        const array = []
+        _.forEach(this.week,(weekDay,index)=>{
+          const start = _.get(item, `hours[${index}].start`, 0);
+          const end = _.get(item, `hours[${index}].end`, 0);
+
+          const startDate = moment().startOf('day').add(start, 'minutes').toDate();
+          // console.log('startDate: ', startDate);
+          const endDate = moment().startOf('day').add(end, 'minutes').toDate();
+          // console.log('endDate: ', endDate);
+          array.push([startDate, endDate]);
+        })
+          item.time = array;
+      })
+      return v;
     },
     //改变页数
     changePage(v) {
@@ -190,99 +189,70 @@ export default {
     },
     //点击按钮将弹框显示
     openDialog(v) {
-      if(v.hours){
-         //准备空数组，专门接受所遍历的开始和结束的值和所需要时间值
-        let everyWeek_1 = []
-        v.hours.forEach(item=>{
-        //准备一个空对象，收集好遍历每一个元素集合--------------------------------------
-          let everyWeek = {}
-          //收集每一个开始时间
-          if(item.start){
-            //如果有往里面灌数据
-// ----------------------------------------------------------------------------------------
-            let shour= Math.ceil(item.start/60)
-            let sminutes = this.formatSeconds(item.start)
-            everyWeek.shour = shour;
-            everyWeek.sminutes = sminutes;
-          }else{
-            //如果没有则使用默认值为0
-            everyWeek.shour = 0
-            everyWeek.sminutes=0
-          }
-           //收集好每一个结束时间-----------------------------------------
-           if(item.end){
-             //将页面时间进行小时制
-              //先将结束将分钟变成秒
-              let ehour= Math.ceil(item.end/60)
-              let eminutes = this.formatSeconds(item.end)
-              everyWeek.ehour = ehour;
-              everyWeek.eminutes = eminutes;
-           }else{
-             everyWeek.ehour = 0
-             everyWeek.eminutes=0
-           }
-          //将收集好的集合灌到准备好的everyWeek数据中
-          everyWeek_1.push(everyWeek)
-        })
-        this.everyWeek_2 = everyWeek_1
-      }
+
+      console.log(v)
+
       //默认是关闭的，点击显示
       this.dialogVisible = true;
       //当点击按钮时接受到的值,将名字赋值给按钮
       this.dialogTitle = v.name;
+
+
+
+
+
       //调用lodash里面的深拷贝来进行赋值
       this.dialogData = _.cloneDeep(v);
     },
-    determine(){
+    determine() {
       //当用户点击了确定按钮时候关闭弹框
-      this.dialogVisible=false;
+      this.dialogVisible = false;
       //发请求更新数据
-
-
     },
-    changeClose({_id,isClosed }){
+    changeClose({ _id, isClosed }) {
       //当开关值改变向后端发送请求
       //初始化一个空对象
       let data = {};
       //判定开关的状态，并准备data数据
-      if(isClosed) {
-        data = {closed:{closed:true}};
+      if (isClosed) {
+        data = { closed: { closed: true } };
       } else {
-        data = {closed:null};
+        data = { closed: null };
       }
       //准备好的数据准备发请求
-      restaurantPost({ data: data, id: _id})
+      restaurantPost({ data: data, id: _id })
         .then(() => {
           //成功后将显示框打开
           this.isShow = true;
           //返回一个promise对象
-          return restaurantGet()
-        }).then(res=>{
+          return restaurantGet();
+        })
+        .then((res) => {
           //重新更新页面开始
-            //将后端返回来的请求数据灌进页面
-            let oldObject = [];
-            //循环遍历每个用户
-            res.data.forEach((item) => {
-              //准备一个空数组，将整理来的数据灌进去
-              let obj = {};
-              obj.name = item.name["zh-CN"];
-              //存一份英文名字
-              obj.englishName = item.name['en-US']
-              obj.address = item.address["formatted"];
-              obj.tags = item.tags;
-              //将用户的id传进去
-              obj._id = item._id;
-              //循环遍历每个函数，调用检查开关门函数
-              obj.isClosed=this.checkClosed(item)
-              oldObject.push(obj);
-            });
-            this.tableData = oldObject;
-            //重新更新页面结束
-            this.$message({
-              message: "恭喜你,更新成功",
-              type: "success",
-            })
-          })
+          //将后端返回来的请求数据灌进页面
+          let oldObject = [];
+          //循环遍历每个用户
+          res.data.forEach((item) => {
+            //准备一个空数组，将整理来的数据灌进去
+            let obj = {};
+            obj.name = item.name["zh-CN"];
+            //存一份英文名字
+            obj.englishName = item.name["en-US"];
+            obj.address = item.address["formatted"];
+            obj.tags = item.tags;
+            //将用户的id传进去
+            obj._id = item._id;
+            //循环遍历每个函数，调用检查开关门函数
+            obj.isClosed = this.checkClosed(item);
+            oldObject.push(obj);
+          });
+          this.tableData = oldObject;
+          //重新更新页面结束
+          this.$message({
+            message: "恭喜你,更新成功",
+            type: "success",
+          });
+        })
         .catch((err) => {
           this.$message.error("更新失败");
         })
@@ -292,25 +262,28 @@ export default {
         });
     },
     //添加按钮
-    addTag(){
+    addTag() {
       //判断数组是否有这个元素
       if (this.dialogData.tags.indexOf(this.tags) == -1) {
         //将只有不存在的元素添加到tags里面
-        this.dialogData.tags.push(this.tags)
+        this.dialogData.tags.push(this.tags);
       }
     },
     //移除标签
-    removeTags(item){
+    removeTags(item) {
       //接受到收到的item标签值
-      let index = this.dialogData.tags.indexOf(item)
+      let index = this.dialogData.tags.indexOf(item);
       this.dialogData.tags.splice(index, 1);
     },
     //定义一个秒钟走动函数
     startTime() {
-    this.timer = setInterval(() => {
-      this.time = moment().locale('zh-cn').tz('America/New_York').format('YYYY-MM-DD HH:mm:ss dddd');
-    }, 1000);
-  },
+      this.timer = setInterval(() => {
+        this.time = moment()
+          .locale("zh-cn")
+          .tz("America/New_York")
+          .format("YYYY-MM-DD HH:mm:ss dddd");
+      }, 1000);
+    },
   },
   created() {
     //组件刚挂载时候所发的请求
@@ -327,7 +300,7 @@ export default {
           obj.address = item.address["formatted"];
           obj.tags = item.tags;
           //将时间灌进去
-          obj.hours = item.hours
+          obj.hours = item.hours;
           //将用户的id传进去
           obj._id = item._id;
           //循环遍历每个函数，调用检查开关门函数
@@ -342,18 +315,18 @@ export default {
     //发送请求获取tags内容
     getTags().then((res) => {
       //将数据灌进去
-      this.tags_1=res.data
+      this.tags_1 = res.data;
     });
     //调用时间函数，每隔一秒调用
-    this.startTime()
+    this.startTime();
   },
   //组件销毁之前销毁定时器
-  beforeDestroy(){
+  beforeDestroy() {
     //清除定时器,如果有则清除
-    if(this.timer){
-      clearInterval(this.timer)
+    if (this.timer) {
+      clearInterval(this.timer);
     }
-  }
+  },
 };
 </script>
 
