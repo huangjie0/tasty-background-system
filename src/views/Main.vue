@@ -188,32 +188,34 @@ export default {
       this.dialogData = _.cloneDeep(obj);
     },
     determine() {
-      //当用户点击了确定按钮时候关闭弹框
-      this.dialogVisible = false;
+        const array = [];
+        //当用户点击了确定按钮时候关闭弹框
+        this.dialogVisible = false;
+        this.dialogData.time.forEach((item) => {
+        // * [ start , end ]
+        // * ===> [ { start : 123 , end : 120 }]
+        const startDate = moment(item[0]);
+
+        const endDate = moment(item[1]);
+        const start = startDate.hour() * 60 + startDate.minute();
+        const end = endDate.hour() * 60 + endDate.minute();
+        
+        array.push({ start, end });
+      });
+      this.dialogData.hours = array;
       //发请求更新数据
       // 发post请求
       const data = _.pick(this.dialogData, ['hours', 'name', 'tags']);
       restaurantPost({data,
         id:this.dialogData._id
       }).then(res=>{
-        console.log(res)
+            this.$message({
+            message: '更新成功',
+            type: 'success'
+          });
       }).catch(err=>{
-        console.log(err)
-      }).finally(()=>{
-
+          this.$message.error('更新失败');
       })
-      
-
-
-
-    
-
-
-
-
-
-
-
     },
     changeClose({ _id, isClosed }) {
       //当开关值改变向后端发送请求
