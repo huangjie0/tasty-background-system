@@ -114,6 +114,7 @@
 import { restaurantGet, restaurantPost, getTags } from "@/api/restaurant/index";
 import _ from "lodash";
 import moment from "moment-timezone";
+import moment_1 from 'moment'
 export default {
   name: "Main",
   data() {
@@ -165,23 +166,21 @@ export default {
         return true;
       }
     },
+    
     //定义设置时间函数，整理所需要的time时间
     settime(v){
-      _.forEach(v,(item)=>{
         const array = []
         _.forEach(this.week,(weekDay,index)=>{
-          const start = _.get(item, `hours[${index}].start`, 0);
-          const end = _.get(item, `hours[${index}].end`, 0);
+          const start = _.get(v, `hours[${index}].start`, 0);
+          const end = _.get(v, `hours[${index}].end`, 0);
 
-          const startDate = moment().startOf('day').add(start, 'minutes').toDate();
+          const startDate = moment_1().startOf('day').add(start, 'minutes').toDate();
           // console.log('startDate: ', startDate);
-          const endDate = moment().startOf('day').add(end, 'minutes').toDate();
+          const endDate = moment_1().startOf('day').add(end, 'minutes').toDate();
           // console.log('endDate: ', endDate);
           array.push([startDate, endDate]);
         })
-          item.time = array;
-      })
-      return v;
+      return { time : array };
     },
     //改变页数
     changePage(v) {
@@ -189,20 +188,15 @@ export default {
     },
     //点击按钮将弹框显示
     openDialog(v) {
-
-      console.log(v)
-
       //默认是关闭的，点击显示
       this.dialogVisible = true;
       //当点击按钮时接受到的值,将名字赋值给按钮
       this.dialogTitle = v.name;
-
-
-
-
-
+      //剩余模式将重置的对象合并参数
+      let obj_2 = Object.assign(v,this.settime(v))
+      console.log('obj_2: ', obj_2);
       //调用lodash里面的深拷贝来进行赋值
-      this.dialogData = _.cloneDeep(v);
+      this.dialogData = _.cloneDeep(obj_2);
     },
     determine() {
       //当用户点击了确定按钮时候关闭弹框
