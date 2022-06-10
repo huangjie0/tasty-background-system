@@ -73,15 +73,13 @@
           @close="removeTags(item)"
           closable
         >
-          {{ item }}
+          {{item}}
         </el-tag>
         <!-- 标签结束部分 -->
       </div>
       <el-card>
-        {{ time }}
+        {{time}}
       </el-card>
-
-
       <!-- 时间标签 -->
       <div v-for="(item, index) in dialogData.time" :key="week[index]">
         <span>{{ week[index] }}</span>
@@ -95,10 +93,6 @@
         />
       </div>
       <!-- 时间结束 -->
-
-
-
-      
       <!-- 点击按钮结束 -->
       <span slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false">取 消</el-button>
@@ -128,7 +122,7 @@ export default {
       isShow: false,
       //控制弹框的开关
       dialogVisible: false,
-
+      
       dialogTitle: "",
       //初始化一个对象
       dialogData: {},
@@ -173,14 +167,11 @@ export default {
         _.forEach(this.week,(weekDay,index)=>{
           const start = _.get(v, `hours[${index}].start`, 0);
           const end = _.get(v, `hours[${index}].end`, 0);
-
           const startDate = moment_1().startOf('day').add(start, 'minutes').toDate();
-          // console.log('startDate: ', startDate);
           const endDate = moment_1().startOf('day').add(end, 'minutes').toDate();
-          // console.log('endDate: ', endDate);
           array.push([startDate, endDate]);
         })
-      return { time : array };
+      return {time:array};
     },
     //改变页数
     changePage(v) {
@@ -193,10 +184,9 @@ export default {
       //当点击按钮时接受到的值,将名字赋值给按钮
       this.dialogTitle = v.name;
       //剩余模式将重置的对象合并参数
-      let obj_2 = Object.assign(v,this.settime(v))
-      console.log('obj_2: ', obj_2);
+      let obj = Object.assign(v,this.settime(v))
       //调用lodash里面的深拷贝来进行赋值
-      this.dialogData = _.cloneDeep(obj_2);
+      this.dialogData = _.cloneDeep(obj);
     },
     determine() {
       //当用户点击了确定按钮时候关闭弹框
