@@ -10,7 +10,12 @@ export function encode (str){
 }
 
 //封装获取饭店数据请求
-export function  restaurantPost(data){
+export function  restaurantPost(id,page,limit,keyword){
     //向后端发送更改数据请求
-    return instance.post('/api/restaurant',data)
+    return instance.get(`/api/food?restaurantId=${id}&page=${page}&limit=${limit}&keyword=${keyword}`)
+}
+
+//封装开关按钮改变时的请求
+export function changeSwitch(data){
+    return instance.post('/api/food',data)
 }
