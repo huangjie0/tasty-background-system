@@ -96,8 +96,7 @@
       <!-- 点击按钮结束 -->
       <span slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="dialogVisible = determine"
-          >确 定</el-button>
+        <el-button type="primary" @click="dialogVisible = determine()">确 定</el-button>
       </span>
     </el-dialog>
   </div>
@@ -192,12 +191,12 @@ export default {
       //当用户点击了确定按钮时候关闭弹框
       this.dialogVisible = false;
       //发请求更新数据
-      //整理data里面的数据
-      let data={},
       // 发post请求
-      
-      restaurantPost().then(res=>{
-        console.log(item)
+      const data = _.pick(this.dialogData, ['hours', 'name', 'tags']);
+      restaurantPost({data,
+        id:this.dialogData._id
+      }).then(res=>{
+        console.log(res)
       }).catch(err=>{
         console.log(err)
       }).finally(()=>{
