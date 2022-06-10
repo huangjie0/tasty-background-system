@@ -97,8 +97,7 @@
       <span slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false">取 消</el-button>
         <el-button type="primary" @click="dialogVisible = determine"
-          >确 定</el-button
-        >
+          >确 定</el-button>
       </span>
     </el-dialog>
   </div>
@@ -160,7 +159,7 @@ export default {
         return true;
       }
     },
-    
+
     //定义设置时间函数，整理所需要的time时间
     settime(v){
         const array = []
@@ -171,8 +170,9 @@ export default {
           const endDate = moment_1().startOf('day').add(end, 'minutes').toDate();
           array.push([startDate, endDate]);
         })
-      return {time:array};
+        return {time:array};
     },
+
     //改变页数
     changePage(v) {
       this.page = v;
@@ -192,6 +192,29 @@ export default {
       //当用户点击了确定按钮时候关闭弹框
       this.dialogVisible = false;
       //发请求更新数据
+      //整理data里面的数据
+      let data={},
+      // 发post请求
+      
+      restaurantPost().then(res=>{
+        console.log(item)
+      }).catch(err=>{
+        console.log(err)
+      }).finally(()=>{
+
+      })
+      
+
+
+
+    
+
+
+
+
+
+
+
     },
     changeClose({ _id, isClosed }) {
       //当开关值改变向后端发送请求
