@@ -14,6 +14,7 @@
     <el-table
       :data="foods"
       style="width: 100%; margin-top: 20px"
+      v-loading="loading"
     >
       <el-table-column prop="name.zh-CN" label="名称" width="600"> </el-table-column>
       <el-table-column label="价格" width="600">
@@ -57,7 +58,9 @@ export default {
       //初始化一个食物列表来渲染页面
       foods:[],
       //总页数
-      total:''
+      total:'',
+      //默认是打开弹框的
+      loading: false
     };
   },
   created() {
@@ -81,6 +84,7 @@ export default {
         console.log(err)
       })
      },
+     //当开关发生改变的时候所调用的函数
      changeSwitch(v){
        //获取id
         let id = v._id;
@@ -92,17 +96,27 @@ export default {
           id:id,
           data:data_1
         }
+        this.loading=true
         //发送请求
         changeSwitch(data).then(res=>{
-          console.log(res)
+          this.$message({
+          showClose: true,
+          message: '更新成功',
+          type: 'success'
+        });
         }).catch(err=>{
-          console.log(err)
+          this.$message({
+          showClose: true,
+          message: '更新失败',
+          type: 'error'
+        });
+        }).finally(()=>{
+          //最终刷新页面
+          this.loadFood();
+          //将弹框关闭
+          this.loading=false
         })
-
-
-
      }
-   
   }
 };
 </script>
