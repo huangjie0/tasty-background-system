@@ -17,9 +17,9 @@
       show-summary
       style="width: 100%; margin-top: 20px"
     >
-      <el-table-column prop="id" label="ID" width="180"> </el-table-column>
-      <el-table-column prop="name" label="姓名"> </el-table-column>
-      <el-table-column prop="amount1" label="数值 1（元）"> </el-table-column>
+      <el-table-column prop="id" label="名称" width="600"> </el-table-column>
+      <el-table-column prop="name" label="价格" width="600"> </el-table-column>
+      <el-table-column prop="amount1" label="状态" width="600"></el-table-column>
     </el-table>
   </div>
 </template>
@@ -27,6 +27,7 @@
 <script>
 //导入餐馆get请求函数，进行获取数据
 import { restaurantGet } from "@/api/restaurant/index";
+import { restaurantPost } from '@/api/menus/index'
 export default {
   name: "Menus",
   data() {
@@ -45,6 +46,11 @@ export default {
       .catch((err) => {
         console.log(err);
       });
+    // restaurantPost().then(res=>{
+    //   console.log()
+    // }).catch(err=>{
+    //   console.log(err)
+    // })
   },
 };
 </script>
