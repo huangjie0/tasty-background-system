@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- 下来框开始 -->
-    <el-select v-model="value" clearable placeholder="请选择" @change="loadFood">
+    <el-select v-model="value" clearable placeholder="请选择" @change="loadFood" :filter-method="filterMethod">
       <el-option
         v-for="item in options"
         :key="item._id"
@@ -10,13 +10,14 @@
       >
       </el-option>
     </el-select>
+    <el-input v-model="keyword" @change="getKeywordData" placeholder="请输入内容" />
       <!-- 下来框结束 -->
     <el-table
       :data="foods"
       style="width: 100%; margin-top: 20px"
       v-loading="loading"
     >
-      <el-table-column prop="name.zh-CN" label="名称" width="600"> </el-table-column>
+      <el-table-column prop="name.zh-CN" label="名称" width="600"></el-table-column>
       <el-table-column label="价格" width="600">
          <template slot-scope="scope">
           {{ scope.row.price | USD }}
@@ -27,12 +28,22 @@
            <el-switch
             v-model="scope.row.available"
             @change="changeSwitch(scope.row)"
-            active-color="#13ce66"
-            inactive-color="#ff4949">
+            active-color="#3c8984"
+            inactive-color="#dcdfe6"
+            >
           </el-switch>
         </template>
       </el-table-column>
     </el-table>
+     <el-pagination
+      :current-page="page"
+      :page-sizes="[10, 50, 100]"
+      :page-size="limit"
+      layout=" prev, pager, next,sizes"
+      :total="total"
+      @current-change="changePage"
+      @size-change="changeSize"
+    />
   </div>
 </template>
 
@@ -41,6 +52,7 @@
 import { restaurantGet } from "@/api/restaurant/index";
 import { restaurantPost, changeSwitch } from '@/api/menus/index'
 import _ from 'lodash'
+import PinyinMatch from 'pinyin-match'
 export default {
   name: "Menus",
    filters: {
@@ -52,15 +64,19 @@ export default {
     return {
       options: [],
       value: "",
+      //表示当前页数
       page: 1,
+      //每页显示的条数
       limit: 10,
       keyword: "",
       //初始化一个食物列表来渲染页面
       foods:[],
       //总页数
-      total:'',
+      total:''-0,
       //默认是打开弹框的
-      loading: false
+      loading: false,
+      //拷贝一份，以供过滤数据用的
+      copyoptions: [],
     };
   },
   created() {
@@ -116,7 +132,35 @@ export default {
           //将弹框关闭
           this.loading=false
         })
-     }
+     },
+     //当页数发生改变时所调用的函数
+     changePage(v){
+      this.page=v
+      this.loadFood()
+     },
+     //当更改每页多少条数据所调用的函数
+     changeSize(v){
+        this.page = 1;
+        this.limit = v;
+        this.loadFood();
+     },
+     //点击搜索按钮，进行筛选过滤
+      getKeywordData(v){
+        this.keyword = v
+        this.page = 1;
+        this.limit = 10;
+        this.loadFood();
+      },
+      //过滤数据
+      filterMethod(v) {
+      if (!v) {
+        this.options = this.copyoptions;
+      } else {
+        this.options = this.options.filter((item) =>
+          PinyinMatch.match(item.name["zh-CN"], v)
+        );
+      }
+    },
   }
 };
 </script>
