@@ -1,7 +1,8 @@
 <template>
   <div>
     <!-- 下来框开始 -->
-    <el-select v-model="value" clearable placeholder="请选择" @change="loadFood" :filter-method="filterMethod">
+    <el-select v-model="value" placeholder="请选择" 
+    @change="loadFood" :filter-method="filterMethod" filterable>
       <el-option
         v-for="item in options"
         :key="item._id"
