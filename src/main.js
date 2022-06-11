@@ -14,6 +14,10 @@ VueRouter.prototype.push = function push(location, onResolve, onReject) {
 }
 
 Vue.config.productionTip = false
+//全局引入表报
+import echarts from "echarts";
+//挂载在原型对象上
+Vue.prototype.$echarts = echarts;
 
 new Vue({
   router,
