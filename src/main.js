@@ -19,6 +19,7 @@ import echarts from "echarts";
 //挂载在原型对象上
 Vue.prototype.$echarts = echarts;
 
+
 new Vue({
   router,
   render: h => h(App),
