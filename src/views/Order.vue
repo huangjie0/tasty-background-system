@@ -9,7 +9,7 @@
     >
     </el-date-picker>
     <div ref="main" style="width:900px; height: 400px"></div>
-    <div ref="main_1" style="width: 600px; height: 400px"></div>
+    <div ref="main_1" style="width: 1000px; height: 700px"></div>
   </div>
 </template>
 
@@ -24,51 +24,18 @@ export default {
   name: "Order",
   data() {
     return {
-      //报表的数据准备
-      //折现图实现
-      //饼状图实现
-      option_1: {
-        title: {
-          text: "Referer of a Website",
-          subtext: "Fake Data",
-          left: "center",
-        },
-        tooltip: {
-          trigger: "item",
-        },
-        legend: {
-          orient: "vertical",
-          left: "left",
-        },
-        series: [
-          {
-            name: "Access From",
-            type: "pie",
-            radius: "50%",
-            data: [
-              { value: 1048, name: "Search Engine" },
-              { value: 735, name: "Direct" },
-              { value: 580, name: "Email" },
-              { value: 484, name: "Union Ads" },
-              { value: 300, name: "Video Ads" },
-            ],
-            emphasis: {
-              itemStyle: {
-                shadowBlur: 10,
-                shadowOffsetX: 0,
-                shadowColor: "rgba(0, 0, 0, 0.5)",
-              },
-            },
-          },
-        ],
-      },
       //定义开始时间
       start: "",
       //定义结束时间
       end: "",
+      //数据时间双向绑定
       value1: "",
+      //定义时间切片
       days_1:[],
+      //定义y轴统计count数据
       countArray_1:[],
+      //定义饼状图的数据
+      pieData:[]
     };
   },
   methods: {
@@ -116,7 +83,7 @@ export default {
                 name: '订单量',
                 type: 'pie',
                 radius: '50%',
-                data: pieData,
+                data: this.pieData,
                 emphasis: {
                     itemStyle: {
                         shadowBlur: 10,
@@ -154,8 +121,19 @@ export default {
                 countArray.push(0)
             }
         })
-          this.countArray_1= countArray
-          this.days_1 = days
+        //将整理出来的数据灌进去
+        this.countArray_1= countArray
+        //将日期数据灌进去
+        this.days_1 = days
+        // -------------------------------------------------------------------------------
+        //定义饼状图数据
+        let pieData = days.map((item)=>{
+        let data = {};
+        data.name = item;
+        data.value = result[item] ? result[item].length : 0;
+        return data;
+        })
+        this.pieData=pieData;
          })
         .catch((err) => {
           console.log(err);
