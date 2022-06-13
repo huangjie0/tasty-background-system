@@ -96,16 +96,43 @@ export default {
                 type: 'line'
             }
         ]
-    }
-            );
-      myChart_1.setOption(this.option_1);
+      }
+          );
+      myChart_1.setOption({
+        title:{
+            text: '订单量',
+            subtext: '',
+            left: 'center'
+        },
+        tooltip: {
+            trigger: 'item'
+        },
+        legend: {
+            orient: 'vertical',
+            left: 'left'
+        },
+        series: [
+            {
+                name: '订单量',
+                type: 'pie',
+                radius: '50%',
+                data: pieData,
+                emphasis: {
+                    itemStyle: {
+                        shadowBlur: 10,
+                        shadowOffsetX: 0,
+                        shadowColor: 'rgba(0, 0, 0, 0.5)'
+                    }
+                }
+            }
+        ]
+      });
     },
     //发请求模块
     getChart(start, end) {
       //在创建时候发请求
       orderGet(start, end)
         .then((res) => {
-          console.log(res)
         let startTime= moment(start).format('YYYY-MM-DD');
         let endTime= moment(end).format('YYYY-MM-DD');
         let range = moment.range(startTime,endTime);
@@ -129,7 +156,6 @@ export default {
         })
           this.countArray_1= countArray
           this.days_1 = days
-          console.log(this.days_1)
          })
         .catch((err) => {
           console.log(err);
