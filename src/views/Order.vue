@@ -26,24 +26,6 @@ export default {
     return {
       //报表的数据准备
       //折现图实现
-      option: {
-        xAxis: {
-            type: 'category',
-            data: this.days_1,
-        },
-        yAxis: {
-            type: 'value'
-        },
-        tooltip: {
-            trigger: 'axis'
-        },
-        series: [
-            {
-                data: this.countArray_1,
-                type: 'line'
-            }
-        ]
-    },
       //饼状图实现
       option_1: {
         title: {
@@ -96,7 +78,26 @@ export default {
       let myChart = this.$echarts.init(this.$refs.main);
       let myChart_1 = this.$echarts.init(this.$refs.main_1);
       // 将数据放入容器内
-      myChart.setOption(this.option);
+      myChart.setOption(
+        {
+        xAxis: {
+            type: 'category',
+            data: this.days_1,
+        },
+        yAxis: {
+            type: 'value'
+        },
+        tooltip: {
+            trigger: 'axis'
+        },
+        series: [
+            {
+                data: this.countArray_1,
+                type: 'line'
+            }
+        ]
+    }
+            );
       myChart_1.setOption(this.option_1);
     },
     //发请求模块
@@ -104,13 +105,12 @@ export default {
       //在创建时候发请求
       orderGet(start, end)
         .then((res) => {
+          console.log(res)
         let startTime= moment(start).format('YYYY-MM-DD');
         let endTime= moment(end).format('YYYY-MM-DD');
         let range = moment.range(startTime,endTime);
         let days = Array.from(range.by('days'));
         days = days.map(m => m.format('YYYY-MM-DD'))
-
-        this.days_1 = days
         //重组数据
         let result = _.map(res.data,(item)=>{
             item.time = moment(item.createdAt).format('YYYY-MM-DD');
@@ -128,16 +128,19 @@ export default {
             }
         })
           this.countArray_1= countArray
+          this.days_1 = days
+          console.log(this.days_1)
          })
         .catch((err) => {
           console.log(err);
-        });
+      });
     },
   },
   updated() {
     //当页面数据发生改变所获取最新的数据来供发请求
     this.start = moment(this.value1[0]).toISOString();
     this.end = moment(this.value1[1]).toISOString();
+    //调用请求函数
     this.getChart(this.start, this.end);
     this.drawChart();
   },
